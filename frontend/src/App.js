@@ -6,23 +6,26 @@ import axios from 'axios';
 
 function App() {
   const [report, setReport] = useState(null);
+  const [overviewData, setOverviewData] = useState(null);
 
   useEffect(() => {
-    axios.get('data/data.json')
+    axios.get('data/report.json')
       .then((res) => {
         let data = [];
-        for (let columnName in res.data) {
-          data.push([columnName, res.data[columnName]]);
+        console.log(res.data.variables);
+        for (let columnName in res.data.variables) {
+          data.push([columnName, res.data.variables[columnName]]);
         }
         setReport(data);
+        setOverviewData(res.data.table)
       });
   },[]);
 
-  if (report) {
+  if (report && overviewData) {
     return (
       <div>
         <h1>Data Validation</h1>
-        <Overview data={report} />
+        <Overview data={overviewData} />
         <ColumnsView data={report} />
         <AlertForm />
       </div>
