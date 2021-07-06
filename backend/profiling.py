@@ -2,8 +2,7 @@ import pandas as pd
 import json
 import numpy as np
 from pandas_profiling import ProfileReport
-from starlette.responses import JSONResponse 
-from with_sql_session import remote_sql_session
+
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -20,13 +19,7 @@ class NpEncoder(json.JSONEncoder):
         else:
             return super(NpEncoder, self).default(obj)
 
-@remote_sql_session
-def _get_data(session, query):
-    df = pd.read_sql(query, session.bind)
-    return df
-
-def generate_data(query):
-    df = _get_data(query)
+def generate_data(df):
     if 'id' in df.columns:
         df.drop(['id'], axis=1, inplace=True)
     df_profile = ProfileReport(df, minimal=True)
