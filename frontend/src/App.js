@@ -9,8 +9,13 @@ function App() {
   const [overviewData, setOverviewData] = useState(null);
 
   useEffect(() => {
-    axios.get('data/report.json')
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    };
+    axios.get('http://localhost:8000/get-report', headers)
       .then((res) => {
+        console.log(res)
         let data = [];
         console.log(res.data.variables);
         for (let columnName in res.data.variables) {
@@ -20,6 +25,8 @@ function App() {
         setOverviewData(res.data.table)
       });
   },[]);
+
+  console.log(report)
 
   if (report && overviewData) {
     return (
