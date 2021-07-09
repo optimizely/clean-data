@@ -28,7 +28,7 @@ function App() {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
     };
-    axios.get('data/report.json', headers)
+    axios.get('http://localhost:8000/get-report', headers)
       .then((res) => {
         let data = [];
         for (let columnName in res.data.variables) {
@@ -42,26 +42,35 @@ function App() {
   const getActiveCustomers = useCallback( event => {
     event.preventDefault();
     console.log('getActiveCustomers')
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    };
     if (overviewButtonName === 'Show Statistics of Active Customers') {
+        axios.get('http://localhost:8000/get-active-customers', headers)
+        .then((res) => {
+          let data = [];
+          for (let columnName in res.data.variables) {
+            data.push([columnName, res.data.variables[columnName]]);
+          }
+          setReport(data);
+          setOverviewData(res.data.table)
+        });
         setOverviewButtonName('Show Statistics of whole table')
     } else {
+        axios.get('http://localhost:8000/get-report', headers)
+        .then((res) => {
+          let data = [];
+          for (let columnName in res.data.variables) {
+            data.push([columnName, res.data.variables[columnName]]);
+          }
+          setReport(data);
+          setOverviewData(res.data.table)
+        });
         setOverviewButtonName('Show Statistics of Active Customers')
     }
-    // useEffect(() => {
-    //   const headers = {
-    //     'Access-Control-Allow-Origin': '*',
-    //     'Content-Type': 'application/json',
-    //   };
-    //   axios.get('http://localhost:8000/get-active-customer', headers)
-    //     .then((res) => {
-    //       let data = [];
-    //       for (let columnName in res.data.variables) {
-    //         data.push([columnName, res.data.variables[columnName]]);
-    //       }
-    //       setReport(data);
-    //       setOverviewData(res.data.table)
-    //     });
-    // },[]);
+
+
   });
 
   if (report && overviewData) {
