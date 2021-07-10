@@ -54,7 +54,6 @@ const ColumnDetail = (props) => {
 
         axios.get(`http://localhost:8000/get-missing-report/${props.name}`, headers)
         .then((res) => {
-            console.log(res.data);
             setCSVData(res.data);
             csvLink.current.link.click()
         })
