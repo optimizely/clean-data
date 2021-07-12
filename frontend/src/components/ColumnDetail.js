@@ -1,7 +1,7 @@
 
-// import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { CSVLink } from "react-csv";
-
+import axios from 'axios';
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -38,23 +38,41 @@ const BlinkySpan = styled.span`
 `
 
 const ColumnDetail = (props) => {
+    const [csvData, setCSVData] = useState('');
+    const csvLink = useRef();
+
     let solution = <div></div>;
     if (props.detail.p_missing > 0) {
         solution = <button>Solution</button>
     } 
+
+    const getCSVFile = async () => {
+        const headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          };
+
+        axios.get(`http://localhost:8000/get-missing-report/${props.name}`, headers)
+        .then((res) => {
+            setCSVData(res.data);
+            csvLink.current.link.click()
+        })
+        .catch(err => console.error(err))
+    }
 
     return (
         <Container>
             <Box>
                 <div>
                     <h3>{props.name}</h3>
-                    <input type="button" value="Export to CSV File" />
-                    {/* <CSVLink
-                    headers={headers}
-                    filename="report.csv"
-                    data={data}
-                    ref={this.csvLinkEl}
-                    /> */}
+                    <button onClick={() => getCSVFile()}>Export to CSV File</button>
+                    <CSVLink
+                        filename={`${props.name}_missing_report.csv`}
+                        data={csvData}
+                        ref={csvLink}
+                        asyncOnClick={true}
+                        target="_blank"
+                    />
                 </div>
                 <div>
                     <Wrapper>
