@@ -1,6 +1,7 @@
 import Overview from "./components/Overiew";
 import ColumnsView from "./components/ColumnsView";
-// import AlertForm from "./components/AlertForm";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
 import styled from "styled-components";
 import { useState, useEffect, useCallback} from "react";
 import axios from 'axios';
@@ -9,26 +10,54 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  width: 100vw;
+  width: 80vw;
   height: 100%;
+  margin: 0 auto;
 `
 const Title = styled.h1`
   font-family: 'Roboto';
   font-size: '4rem';
 `
+const Box = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding: 10px;
+`
+const ReportWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 3;
+  height: 100%;
+  width: 100%;
+  padding: 0 50px;
+`
 
 function App() {
+
   const [report, setReport] = useState(null);
   const [overviewData, setOverviewData] = useState(null);
   const [overviewButtonName, setOverviewButtonName] = useState('Show Statistics of Active Customers')
+  const [schema, setSchema] = useState(null);
 
+  // useEffect(() => {
+  //   const headers = {
+  //     'Access-Control-Allow-Origin': '*',
+  //     'Content-Type': 'application/json',
+  //   };
+  //   axios.get('http://localhost:8000/get-schemas', headers)
+  //     .then((res) => {
+  //       console.log(res.data);
+  //     })
+  // },[])
   useEffect(() => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
     };
-    axios.get('http://localhost:8000/get-report', headers)
+    axios.get('data/report.json', headers)
       .then((res) => {
         let data = [];
         for (let columnName in res.data.variables) {
@@ -41,7 +70,6 @@ function App() {
 
   const getActiveCustomers = useCallback( event => {
     event.preventDefault();
-    console.log('getActiveCustomers')
     const headers = {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
@@ -76,10 +104,14 @@ function App() {
   if (report && overviewData) {
     return (
       <Container>
-        <Title>Clean Data</Title>
-        <Overview data={overviewData} getActiveCustomers={getActiveCustomers} buttonName={overviewButtonName} />
-        <ColumnsView data={report} />
-        {/* <AlertForm /> */}
+        <Header />
+          <Box>
+            <Sidebar />
+            <ReportWrapper>
+              <Overview data={overviewData} getActiveCustomers={getActiveCustomers} buttonName={overviewButtonName} />
+              <ColumnsView data={report} />
+            </ReportWrapper>
+          </Box>
       </Container>
     );
   } else {

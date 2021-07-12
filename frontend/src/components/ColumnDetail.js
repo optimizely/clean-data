@@ -44,7 +44,9 @@ const ColumnDetail = (props) => {
     let solution = <div></div>;
     if (props.detail.p_missing > 0) {
         solution = <button>Solution</button>
-    } 
+    } else {
+        solution = <div>It is clean!</div>
+    }
 
     const getCSVFile = async () => {
         const headers = {
