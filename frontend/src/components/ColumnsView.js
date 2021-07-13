@@ -2,16 +2,14 @@
 import ColumnDetail from './ColumnDetail';
 import styled from "styled-components";
 
-const Title = styled.h2`
-    font-family: 'Roboto';
-    font-size: '3rem';
-`
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     padding: 10px;
     width: 100%;
+    height: 90vh;
+    overflow-y: auto;
 `
 
 
@@ -19,7 +17,6 @@ function ColumnsView(props) {
 
     return (
         <Container>
-            <Title>Column Validation</Title>
                 {props.data.map((column) => (
                     <ColumnDetail key={column[0]} name={column[0]} detail={column[1]} />
                 ))}

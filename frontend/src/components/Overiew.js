@@ -5,12 +5,18 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
+    height: 25vh;
     padding: 10px
     
 `
 const Title = styled.h2`
-    font-family: 'Roboto';
-    font-size: '3rem';
+    font-family: Roboto;
+    font-size: 2rem;
+`
+const Metrics = styled.div`
+    font-family: Roboto;
+    font-size: 1rem;
+    padding: 5px 0;
 `
 const Wrapper = styled.div`
     display: flex;
@@ -18,6 +24,7 @@ const Wrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding: 5px 0;
 `
 
 const Overview = (props) => {
@@ -29,23 +36,23 @@ const Overview = (props) => {
                 <button onClick={props.getActiveCustomers}>{props.buttonName}</button>
             </Wrapper>
             <Wrapper>
-                <h4>Number of columns</h4>
+                <Metrics>Number of columns</Metrics>
                 <span>{props.data.n_var}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Total Row Count</h4>
+                <Metrics>Total Row Count</Metrics>
                 <span>{props.data.n}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Number of Customers with complete data</h4>
+                <Metrics>Number of Customers with complete data</Metrics>
                 <span>0000000</span>
             </Wrapper>
             <Wrapper>
-                <h4>Number of Customers with missing data</h4>
+                <Metrics>Number of Customers with missing data</Metrics>
                 <span>0000000</span>
             </Wrapper>
             <Wrapper>
-                <h4>Percentage of Customers with missing data</h4>
+                <Metrics>Percentage of Customers with missing data</Metrics>
                 <span>00.00%</span>
             </Wrapper>
         </Container>

@@ -5,21 +5,42 @@ const Container = styled.div`
     flex-grow: 1;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
     width: 50%;
     hight: 100%;
     padding: 10px 10px;
 `
 
-const Wrapper = styled
-
+const TableButton = styled.button`
+    width: 20vw;
+    hight: auto;
+    font-family: Helvetica;
+    font-size: 1rem;
+    padding: 5px 0;
+    margin: 5px 0;
+`
+const Label = styled.div`
+    font-family: Helvetica;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    hight: 12vh;
+    width: 20vw;
+    padding: 10px 0;
+    text-align: center;
+`
 const Sidebar = (props) => {
     return (
         <Container>
             
-            <h2>User-Friendly Data Mart Blue Layer</h2>
-            <div>Customer Detail</div>
-            <h2>User-Friendly Data Mart Green Layer</h2>
-            <div>Account</div>
+            <Label style={{backgroundColor:"#3722f6"}}>UFDM - Blue Layer</Label>
+            {props.blue.map((table) => (
+                <TableButton>{table}</TableButton>
+            ))}
+            <Label style={{backgroundColor:"#41c300"}}>UFDM - Green Layer</Label>
+            {props.green.map((table) => (
+                <TableButton>{table}</TableButton>
+            ))}
         </Container>
     )
 }

@@ -9,30 +9,32 @@ import axios from 'axios';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 80vw;
-  height: 100%;
+  align-items: flex-start;
+  width: 70vw;
+  height: 160vh;
   margin: 0 auto;
+  padding: 20px 0;
 `
-const Title = styled.h1`
-  font-family: 'Roboto';
-  font-size: '4rem';
-`
+
 const Box = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  hegith: 290vh;
   align-items: flex-start;
-  justify-content: space-around;
   padding: 10px;
 `
 const ReportWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  flex-grow: 3;
-  height: 100%;
   width: 100%;
-  padding: 0 50px;
+  height: 130vh;
+  padding: 0 40px;
+`
+
+const Title = styled.h2`
+    font-family: 'Roboto';
+    font-size: '3rem';
 `
 
 function App() {
@@ -40,18 +42,33 @@ function App() {
   const [report, setReport] = useState(null);
   const [overviewData, setOverviewData] = useState(null);
   const [overviewButtonName, setOverviewButtonName] = useState('Show Statistics of Active Customers')
-  const [schema, setSchema] = useState(null);
+  const [blueTables, setBlueTables] = useState(null);
+  const [greenTables, setGreenTables] = useState(null);
 
-  // useEffect(() => {
-  //   const headers = {
-  //     'Access-Control-Allow-Origin': '*',
-  //     'Content-Type': 'application/json',
-  //   };
-  //   axios.get('http://localhost:8000/get-schemas', headers)
-  //     .then((res) => {
-  //       console.log(res.data);
-  //     })
-  // },[])
+  useEffect(() => {
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    };
+    axios.get('http://localhost:8000/get-tables/ufdm', headers)
+      .then((res) => {
+        let tables = [];
+        for (let table in res.data["table name"]) {
+          tables.push(res.data["table name"][table]);
+        }
+        setGreenTables(tables);
+      })
+    
+    axios.get('http://localhost:8000/get-tables/ufdm_blue', headers)
+      .then((res) => {
+        let tables = [];
+        for (let table in res.data["table name"]) {
+          tables.push(res.data["table name"][table]);
+        }
+        setBlueTables(tables);
+      })
+  },[]);
+
   useEffect(() => {
     const headers = {
       'Access-Control-Allow-Origin': '*',
@@ -97,27 +114,27 @@ function App() {
         });
         setOverviewButtonName('Show Statistics of Active Customers')
     }
-
-
   });
 
-  if (report && overviewData) {
+
+  if (report && overviewData && blueTables && greenTables) {
     return (
       <Container>
         <Header />
           <Box>
-            <Sidebar />
+            <Sidebar green={greenTables} blue={blueTables} />
             <ReportWrapper>
               <Overview data={overviewData} getActiveCustomers={getActiveCustomers} buttonName={overviewButtonName} />
+              <Title>Column Validation</Title>
               <ColumnsView data={report} />
             </ReportWrapper>
           </Box>
       </Container>
     );
   } else {
-    return (
-      <Container>Loading</Container>
-    )
+      return (
+        <Container>Loading</Container>
+      )
   }
 
 
