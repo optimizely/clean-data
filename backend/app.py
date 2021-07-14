@@ -78,6 +78,19 @@ def generate_active_customer_report():
                 left join ufdm.account a on a.id = ffaa.account_id 
                 where ffaa.audit_month = '2021-06-01'
                 group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
+            
+                union all
+
+                select a2.*
+                from zaius_salesforce.account a 
+                left join ufdm.account a2 on a2.id = a.id 
+                where a.record_type_id = '0121P000000oQMKQA2'
+                    and a.account_stage_c = 'Onboarding' 
+                    or a.account_stage_c = 'Ongoing'
+                    and a.name not like '%Zaius%' 
+                    and a.name not like '%test%'
+                    and a.name not like '%zira web demo%'
+                group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
             '''
     df = pgres.query(db,query)
     data = generate_data(df)
