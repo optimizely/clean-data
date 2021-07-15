@@ -4,19 +4,27 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    width: 50%;
+    width: 100%;
+    height: 30vh;
     padding: 10px
     
 `
-const Title = styled.h2`
-    font-family: 'Roboto';
-    font-size: '3rem';
+const Title = styled.div`
+    font-family: Helvetica;
+    font-size: 2rem;
+`
+const Metrics = styled.div`
+    font-family: Roboto;
+    font-size: 1rem;
+    padding: 5px 0;
 `
 const Wrapper = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+    padding: 5px 0;
 `
 
 const Overview = (props) => {
@@ -24,28 +32,28 @@ const Overview = (props) => {
     return (
         <Container>
             <Wrapper>
-                <Title>Overview</Title>
+                <Title>{props.tableLabel} Overview</Title>
                 <button onClick={props.getActiveCustomers}>{props.buttonName}</button>
             </Wrapper>
             <Wrapper>
-                <h4>Number of columns</h4>
+                <Metrics>Number of columns</Metrics>
                 <span>{props.data.n_var}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Total Row Count</h4>
+                <Metrics>Total Row Count</Metrics>
                 <span>{props.data.n}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Number of Customers with complete data</h4>
-                <span>0000000</span>
+                <Metrics>Number of Customers with complete data</Metrics>
+                <span>{props.data.without_nulls}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Number of Customers with missing data</h4>
-                <span>0000000</span>
+                <Metrics>Number of Customers with missing data</Metrics>
+                <span>{props.data.with_nulls}</span>
             </Wrapper>
             <Wrapper>
-                <h4>Percentage of Customers with missing data</h4>
-                <span>00.00%</span>
+                <Metrics>Percentage of Customers with missing data</Metrics>
+                <span>{(props.data.perc_nulls * 100).toFixed(2)}%</span>
             </Wrapper>
         </Container>
     )
