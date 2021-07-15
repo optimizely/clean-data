@@ -4,8 +4,11 @@ from data_source import Postgresql_connect
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import secrets
+import json
 
 app = FastAPI()
+
+QUERIES_FILE = './data/queries.json'
 
 origins = [
     "http://localhost",
@@ -85,17 +88,22 @@ def generate_active_customer_report():
 
 @app.get("/get-missing-report/{column}")
 def generate_missing_column_csv(column):
-    query = '''select a.id, 
+    f = open(QUERIES_FILE)
+    queries_data = json.load(f)
+    f.close()
+    if column in queries_data.keys():
+        query = queries_data[column]
+    else:
+        query = '''select a.id, 
                      a.name,
                      a.source,
-                     a.epi_universal_id,
-                     a.account_executive,
-                     a.owner,
-                     a.owner_id
-              from ufdm.account a
-              where a.{column} is null;'''.format(column = column)
+                     a.{column} as missing_{column},
+                     NULL as {column}_found
+                from ufdm.account a
+                where a.{column} is null;'''.format(column = column)
     df = pgres.query(db,query) 
     s = io.StringIO()
     df.to_csv(s)
-    csv = s.getvalue()
-    return Response(media_type="application/json", content=csv)
+    data = s.getvalue()
+    return Response(media_type="application/json", content=data)
+    
