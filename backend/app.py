@@ -93,12 +93,17 @@ def generate_missing_column_csv(column):
     f.close()
     if column in queries_data.keys():
         query = queries_data[column]
-        df = pgres.query(db,query) 
-        s = io.StringIO()
-        df.to_csv(s)
-        data = s.getvalue()
-        return Response(media_type="application/json", content=data)
     else:
-        data = {"error" : "the column doesn't have a solution query yet"}
-        return data
+        query = '''select a.id, 
+                     a.name,
+                     a.source,
+                     a.{column} as missing_{column},
+                     NULL as {column}_found
+                from ufdm.account a
+                where a.{column} is null;'''.format(column = column)
+    df = pgres.query(db,query) 
+    s = io.StringIO()
+    df.to_csv(s)
+    data = s.getvalue()
+    return Response(media_type="application/json", content=data)
     
