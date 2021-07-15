@@ -32,15 +32,30 @@ const Label = styled.div`
 const Sidebar = (props) => {
     return (
         <Container>
-            
             <Label style={{backgroundColor:"#3722f6"}}>UFDM - Blue Layer</Label>
-            {props.blue.map((table) => (
-                <TableButton>{table}</TableButton>
-            ))}
+            {props.blue.map((table) => {
+                if (table.substring(0, 9) !== 'snapshot_') {
+                    return (
+                        <TableButton 
+                            onClick={() => props.getTableReports('ufdm_blue', table)}
+                        >
+                        {table}
+                        </TableButton>
+                    )
+                }
+            })}
             <Label style={{backgroundColor:"#41c300"}}>UFDM - Green Layer</Label>
-            {props.green.map((table) => (
-                <TableButton>{table}</TableButton>
-            ))}
+            {props.green.map((table) => {
+                if (table.substring(0, 9) !== 'snapshot_') {
+                    return (
+                        <TableButton 
+                            onClick={() => props.getTableReports('ufdm', table)}
+                        >
+                        {table}
+                        </TableButton>
+                    )
+                }
+            })}
         </Container>
     )
 }

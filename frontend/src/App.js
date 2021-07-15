@@ -44,12 +44,14 @@ function App() {
   const [overviewButtonName, setOverviewButtonName] = useState('Show Statistics of Active Customers')
   const [blueTables, setBlueTables] = useState(null);
   const [greenTables, setGreenTables] = useState(null);
+  const [tableLabel, setTableLabel] = useState('');
+  
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+  };
 
   useEffect(() => {
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-    };
     axios.get('http://localhost:8000/get-tables/ufdm', headers)
       .then((res) => {
         let tables = [];
@@ -69,28 +71,40 @@ function App() {
       })
   },[]);
 
-  useEffect(() => {
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-    };
-    axios.get('data/report.json', headers)
-      .then((res) => {
-        let data = [];
-        for (let columnName in res.data.variables) {
-          data.push([columnName, res.data.variables[columnName]]);
-        }
-        setReport(data);
-        setOverviewData(res.data.table)
-      });
-  },[]);
+  // useEffect(() => {
+  //   const headers = {
+  //     'Access-Control-Allow-Origin': '*',
+  //     'Content-Type': 'application/json',
+  //   };
+  //   axios.get('http://localhost:8000/get-report', headers)
+  //     .then((res) => {
+  //       let data = [];
+  //       for (let columnName in res.data.variables) {
+  //         data.push([columnName, res.data.variables[columnName]]);
+  //       }
+  //       console.log(res.data)
+  //       setReport(data);
+  //       setOverviewData(res.data.table)
+  //     });
+  // },[]);
+
+  const getTableReports = useCallback((schema,table)=> {
+      axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
+        .then((res) => {
+          let data = [];
+          for (let columnName in res.data.variables) {
+            data.push([columnName, res.data.variables[columnName]]);
+          }
+          console.log(res.data.table);
+          setReport(data);
+          setOverviewData(res.data.table);
+          setTableLabel(`${schema}.${table}`)
+      })
+
+  });
 
   const getActiveCustomers = useCallback( event => {
     event.preventDefault();
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-    };
     if (overviewButtonName === 'Show Statistics of Active Customers') {
         axios.get('http://localhost:8000/get-active-customers', headers)
         .then((res) => {
@@ -116,18 +130,31 @@ function App() {
     }
   });
 
+  let reportSection;
+  if (!report && !overviewData) {
+    reportSection = <h1>Please select a table for the report</h1>
+  } else if (report && overviewData) {
+    reportSection = (
+      <ReportWrapper>
+        <Overview 
+            data={overviewData} 
+            getActiveCustomers={getActiveCustomers} 
+            buttonName={overviewButtonName} 
+            tableLabel={tableLabel}
+        />
+        <Title>Column Validation</Title>
+        <ColumnsView data={report} />
+      </ReportWrapper>
+    )
+  }
 
-  if (report && overviewData && blueTables && greenTables) {
+  if (blueTables && greenTables) {
     return (
       <Container>
         <Header />
           <Box>
-            <Sidebar green={greenTables} blue={blueTables} />
-            <ReportWrapper>
-              <Overview data={overviewData} getActiveCustomers={getActiveCustomers} buttonName={overviewButtonName} />
-              <Title>Column Validation</Title>
-              <ColumnsView data={report} />
-            </ReportWrapper>
+            <Sidebar green={greenTables} blue={blueTables} getTableReports={getTableReports} />
+            {reportSection}
           </Box>
       </Container>
     );

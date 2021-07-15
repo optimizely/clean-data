@@ -50,9 +50,9 @@ def get_tables(schema):
     js = tables.to_json(orient='columns')
     return Response(media_type="application/json", content=js)
 
-@app.get("/get-report")
-def generate_report():
-    query = "select * from ufdm.account;"
+@app.get("/get-report/{schema}-{table}")
+def generate_report(schema, table):
+    query = '''select * from {schema}.{table};'''.format(schema = schema, table =table)
     df = pgres.query(db,query)
     data = generate_data(df)
     return Response(media_type="application/json", content=data)
@@ -60,9 +60,9 @@ def generate_report():
 @app.get("/get-active-customers")
 def generate_active_customer_report():
     query = ''' select a.*
-                from epi_netsuite.customers c 
-                left join epi_netsuite.billing_subscriptions bs on bs.customer_id = c.customer_id 
-                left join epi_netsuite.billing_subscription_lines bsl on bsl.subscription_id = bs.subscription_id
+                from epi_netsuite_2021_07_13.customers c 
+                left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.customer_id = c.customer_id 
+                left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id = bs.subscription_id
                 left join ufdm.account a on a.epi_universal_id = c.master_customer_id 
                 where bsl.date_start <= now()
                 and bsl.date_end >= now()

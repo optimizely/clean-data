@@ -9,8 +9,8 @@ const Container = styled.div`
     padding: 10px
     
 `
-const Title = styled.h2`
-    font-family: Roboto;
+const Title = styled.div`
+    font-family: Helvetica;
     font-size: 2rem;
 `
 const Metrics = styled.div`
@@ -32,7 +32,7 @@ const Overview = (props) => {
     return (
         <Container>
             <Wrapper>
-                <Title>Overview</Title>
+                <Title>{props.tableLabel} Overview</Title>
                 <button onClick={props.getActiveCustomers}>{props.buttonName}</button>
             </Wrapper>
             <Wrapper>
@@ -45,15 +45,15 @@ const Overview = (props) => {
             </Wrapper>
             <Wrapper>
                 <Metrics>Number of Customers with complete data</Metrics>
-                <span>0000000</span>
+                <span>{props.data.without_nulls}</span>
             </Wrapper>
             <Wrapper>
                 <Metrics>Number of Customers with missing data</Metrics>
-                <span>0000000</span>
+                <span>{props.data.with_nulls}</span>
             </Wrapper>
             <Wrapper>
                 <Metrics>Percentage of Customers with missing data</Metrics>
-                <span>00.00%</span>
+                <span>{(props.data.perc_nulls * 100).toFixed(2)}%</span>
             </Wrapper>
         </Container>
     )
