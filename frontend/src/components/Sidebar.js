@@ -6,26 +6,29 @@ const Container = styled.div`
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    width: 50%;
+    width: 40vw;
     hight: 100%;
     padding: 10px 10px;
 `
 
 const TableButton = styled.button`
-    width: 20vw;
+    width: 100%;
     hight: auto;
     font-family: Helvetica;
-    font-size: 1rem;
-    padding: 5px 0;
+    font-size: 1.3vw;
+    padding: 10px 0;
     margin: 5px 0;
+    border-radius: 10px;
+    background-color: azure;
+    :hover {background-color: #29B6F6}
 `
 const Label = styled.div`
     font-family: Helvetica;
-    font-size: 1.2rem;
+    font-size: 1.2vw;
     font-weight: 600;
     color: white;
     hight: 12vh;
-    width: 20vw;
+    width: 100%;
     padding: 10px 0;
     text-align: center;
 `
@@ -36,7 +39,7 @@ const Sidebar = (props) => {
             {props.blue.map((table) => {
                 if (table.substring(0, 9) !== 'snapshot_') {
                     return (
-                        <TableButton 
+                        <TableButton key={table}
                             onClick={() => props.getTableReports('ufdm_blue', table)}
                         >
                         {table}
@@ -48,7 +51,7 @@ const Sidebar = (props) => {
             {props.green.map((table) => {
                 if (table.substring(0, 9) !== 'snapshot_') {
                     return (
-                        <TableButton 
+                        <TableButton key={table}
                             onClick={() => props.getTableReports('ufdm', table)}
                         >
                         {table}
