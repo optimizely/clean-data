@@ -10,7 +10,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 70vw;
+  width: 90vw;
   height: 160vh;
   margin: 0 auto;
   padding: 20px 0;
@@ -28,13 +28,14 @@ const ReportWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 130vh;
+  height: 90vh;
   padding: 0 40px;
 `
-
-const Title = styled.h2`
-    font-family: 'Roboto';
-    font-size: '3rem';
+const Holder = styled.div`
+  text-align: center;
+  font-family: Helvetica;
+  font-size: 3vw;
+  padding: 200px 20px;
 `
 
 function App() {
@@ -45,7 +46,8 @@ function App() {
   const [blueTables, setBlueTables] = useState(null);
   const [greenTables, setGreenTables] = useState(null);
   const [tableLabel, setTableLabel] = useState('');
-  
+  const [tableButtonClick, setTableButtonClick] = useState(false);
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json',
@@ -71,24 +73,8 @@ function App() {
       })
   },[]);
 
-  // useEffect(() => {
-  //   const headers = {
-  //     'Access-Control-Allow-Origin': '*',
-  //     'Content-Type': 'application/json',
-  //   };
-  //   axios.get('http://localhost:8000/get-report', headers)
-  //     .then((res) => {
-  //       let data = [];
-  //       for (let columnName in res.data.variables) {
-  //         data.push([columnName, res.data.variables[columnName]]);
-  //       }
-  //       console.log(res.data)
-  //       setReport(data);
-  //       setOverviewData(res.data.table)
-  //     });
-  // },[]);
-
   const getTableReports = useCallback((schema,table)=> {
+      setTableButtonClick(true);
       axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
         .then((res) => {
           let data = [];
@@ -100,10 +86,9 @@ function App() {
           setOverviewData(res.data.table);
           setTableLabel(`${schema}.${table}`)
       })
-
   });
 
-  const getActiveCustomers = useCallback( event => {
+  const getActiveCustomers = useCallback( (event, schema, table) => {
     event.preventDefault();
     if (overviewButtonName === 'Show Statistics of Active Customers') {
         axios.get('http://localhost:8000/get-active-customers', headers)
@@ -117,7 +102,7 @@ function App() {
         });
         setOverviewButtonName('Show Statistics of whole table')
     } else {
-        axios.get('http://localhost:8000/get-report', headers)
+        axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -131,21 +116,36 @@ function App() {
   });
 
   let reportSection;
-  if (!report && !overviewData) {
-    reportSection = <h1>Please select a table for the report</h1>
-  } else if (report && overviewData) {
-    reportSection = (
+  let loadingHolder = (
       <ReportWrapper>
-        <Overview 
-            data={overviewData} 
-            getActiveCustomers={getActiveCustomers} 
-            buttonName={overviewButtonName} 
-            tableLabel={tableLabel}
-        />
-        <Title>Column Validation</Title>
-        <ColumnsView data={report} />
+        <Holder>
+          Loading...
+        </Holder>
       </ReportWrapper>
-    )
+  )
+
+  if (!report && !overviewData && !tableButtonClick) {
+      reportSection = (
+          <ReportWrapper>
+            <Holder>
+              Please select a table for the report
+            </Holder>
+          </ReportWrapper>
+      )
+  } else if (!report && !overviewData && tableButtonClick) {
+      reportSection = loadingHolder;
+  } else if (report && overviewData) {
+      reportSection = (
+        <ReportWrapper>
+          <Overview 
+              data={overviewData} 
+              getActiveCustomers={getActiveCustomers} 
+              buttonName={overviewButtonName} 
+              tableLabel={tableLabel}
+          />
+          <ColumnsView data={report} />
+        </ReportWrapper>
+      )
   }
 
   if (blueTables && greenTables) {
@@ -160,7 +160,12 @@ function App() {
     );
   } else {
       return (
-        <Container>Loading</Container>
+        <Container>
+          <Header />
+
+            <Holder>Loading...</Holder>
+
+        </Container>
       )
   }
 

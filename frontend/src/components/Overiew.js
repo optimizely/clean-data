@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -5,17 +6,18 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
-    height: 30vh;
-    padding: 10px
+    height: auto;
+    padding: 10px;
     
 `
 const Title = styled.div`
-    font-family: Helvetica;
-    font-size: 2rem;
+    font-family: Roboto;
+    font-size: 2.5vw;
+    font-weight: 600;
 `
 const Metrics = styled.div`
-    font-family: Roboto;
-    font-size: 1rem;
+    font-family: Helvetica;
+    font-size: 1.2vw;
     padding: 5px 0;
 `
 const Wrapper = styled.div`
@@ -27,34 +29,66 @@ const Wrapper = styled.div`
     padding: 5px 0;
 `
 
+const Number = styled.span`
+    font-family: Helvetica;
+    font-size: 1.2vw;
+`
+const Button = styled.button`
+    hight: auto;
+    font-family: Helvetica;
+    font-size: 1vw;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 10px;
+    background-color: azure;
+    :hover {background-color: #29B6F6}
+`
+
 const Overview = (props) => {
+    const tableLabel = props.tableLabel.split('.');
+    const schema = tableLabel[0];
+    const table = tableLabel[1];
+    
+    let ac_button;
+    let c_validate;
+    if (table !== 'account') {
+        ac_button = <div></div>
+        c_validate = <div></div>
+    } else {
+        ac_button = <Button onClick={(event) => props.getActiveCustomers(event, schema, table)}>{props.buttonName}</Button>
+        c_validate = (
+            <Fragment>
+                <Wrapper>
+                    <Metrics>Number of Customers with complete data</Metrics>
+                    <Number>{props.data.without_nulls}</Number>
+                </Wrapper>
+                <Wrapper>
+                    <Metrics>Number of Customers with missing data</Metrics>
+                    <Number>{props.data.with_nulls}</Number>
+                </Wrapper>
+                <Wrapper>
+                    <Metrics>Percentage of Customers with missing data</Metrics>
+                    <Number>{(props.data.perc_nulls * 100).toFixed(1)}%</Number>
+                </Wrapper>
+            </Fragment>
+        )
+    }
 
     return (
         <Container>
             <Wrapper>
                 <Title>{props.tableLabel} Overview</Title>
-                <button onClick={props.getActiveCustomers}>{props.buttonName}</button>
+                {ac_button}
             </Wrapper>
             <Wrapper>
-                <Metrics>Number of columns</Metrics>
-                <span>{props.data.n_var}</span>
+                <Metrics>Number of Columns</Metrics>
+                <Number>{props.data.n_var}</Number>
             </Wrapper>
             <Wrapper>
                 <Metrics>Total Row Count</Metrics>
-                <span>{props.data.n}</span>
+                <Number>{props.data.n}</Number>
             </Wrapper>
-            <Wrapper>
-                <Metrics>Number of Customers with complete data</Metrics>
-                <span>{props.data.without_nulls}</span>
-            </Wrapper>
-            <Wrapper>
-                <Metrics>Number of Customers with missing data</Metrics>
-                <span>{props.data.with_nulls}</span>
-            </Wrapper>
-            <Wrapper>
-                <Metrics>Percentage of Customers with missing data</Metrics>
-                <span>{(props.data.perc_nulls * 100).toFixed(2)}%</span>
-            </Wrapper>
+            {c_validate}
         </Container>
     )
 }

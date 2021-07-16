@@ -6,10 +6,10 @@ const Bar = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 5px 0;
+    padding: 15px 0;
 `
 const Logo = styled.img`
-    width: 5%;
+    width: 6vw;
     padding: 20px 40px;
 `
 const Text = styled.div`
@@ -17,11 +17,11 @@ const Text = styled.div`
     flex-direction: column
     padding: 10px 30px;
     font-family: 'Helvetica';
-    font-size: 3rem;
+    font-size: 4vw;
 `
 const Subline = styled.p`
     font-family: 'Helvetica';
-    font-size: 1rem;
+    font-size: 1.2vw;
     padding: 30px 10px 0 10px;
 `
 

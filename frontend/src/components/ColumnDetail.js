@@ -1,15 +1,8 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, Fragment } from "react";
 import { CSVLink } from "react-csv";
 import axios from 'axios';
 import styled from "styled-components";
-
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 100%;
-`
 
 const Box = styled.div`
     display: flex;
@@ -17,24 +10,60 @@ const Box = styled.div`
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid black;
+    background-color: ${props => {
+        if (props.number > 0.05) {
+            return '#EF5350'; 
+        } else if (props.number < 0.05 && props.number > 0) {
+            return '#ffc77d';
+        } else {
+            return '#aaf255'
+        }
+    }};
+    width: 100%;
 `
 
 const Wrapper = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    font-family: Helvetica;
+    font-size: 1.1vw;
+    width: 10vw;
 `
-const BlinkySpan = styled.span`
-    color: ${props => {
-            if (props.number > 0.05) {
-                return 'red'; 
-            } else if (props.number < 0.05 && props.number > 0) {
-                return 'orange';
-            } else {
-                return 'green';
-            }
-        }};
+
+const ButtonWrapper = styled.div`
+    width: 6vw;
+    height: 2.5vh;
+    padding: 0 10px;
+`
+
+const Button = styled.button`
+    width: 6vw;
+    height: 3vh;
+    font-family: Helvetica;
+    font-size: 1.1vw;
+    padding: 0 10px;
+    background-color: azure;
+    border-radius: 10px;
+    :hover {background-color: #29B6F6}
+`
+
+const Name = styled.div`
+    font-family: Helvetica;
+    font-size: 1.2vw;
+    width: 10vw;
+    padding: 15px 10px;
+`
+
+const Label = styled.div`
+    width: 6vw;
+    height: 2.5vh;
+    text-align: center;
+    font-family: Helvetica;
+    font-size: 1.2vw;
+    padding: 0 10px;
+
 `
 
 const ColumnDetail = (props) => {
@@ -43,9 +72,19 @@ const ColumnDetail = (props) => {
 
     let solution = <div></div>;
     if (props.detail.p_missing > 0) {
-        solution = <button>Solution</button>
+        solution = (
+            <ButtonWrapper>
+                <Button onClick={() => getCSVFile()}>Solution</Button>
+                    <CSVLink
+                        filename={`${props.name}_missing_report.csv`}
+                        data={csvData}
+                        ref={csvLink}
+                        asyncOnClick={true}
+                        target="_blank"
+                    />
+            </ButtonWrapper>)
     } else {
-        solution = <div>It is clean!</div>
+        solution = <Label>It is clean!</Label>
     }
 
     const getCSVFile = async () => {
@@ -63,33 +102,20 @@ const ColumnDetail = (props) => {
     }
 
     return (
-        <Container>
-            <Box>
-                <div>
-                    <h3>{props.name}</h3>
-                    <button onClick={() => getCSVFile()}>Export to CSV File</button>
-                    <CSVLink
-                        filename={`${props.name}_missing_report.csv`}
-                        data={csvData}
-                        ref={csvLink}
-                        asyncOnClick={true}
-                        target="_blank"
-                    />
-                </div>
-                <div>
-                    <Wrapper>
-                        <span>Missing Rows: </span>
-                        <span>{props.detail.n_missing}</span>
-                    </Wrapper>
-                    <Wrapper>
-                        <span>Percentage: </span>
-                        <BlinkySpan number={props.detail.p_missing}>{(props.detail.p_missing * 100).toFixed(2)}%</BlinkySpan>
-                    </Wrapper>
-                </div>
+        // <Container>
+            <Box number={props.detail.p_missing}>
+                <Name>{props.name}</Name>
+                <Wrapper>
+                    <span>Missing Rows: </span>
+                    <span>{props.detail.n_missing}</span>
+                </Wrapper>
+                <Wrapper>
+                    <span>Missing Percentage: </span>
+                    <span number={props.detail.p_missing}>{(props.detail.p_missing * 100).toFixed(1)}%</span>
+                </Wrapper>
                 {solution}
-
             </Box>
-        </Container>
+        // </Container>
     )
 
   
