@@ -86,12 +86,9 @@ function App() {
           setOverviewData(res.data.table);
           setTableLabel(`${schema}.${table}`)
       })
-      .then(() => {setTableButtonClick(false)})
-
   });
 
   const getActiveCustomers = useCallback( (event, schema, table) => {
-
     event.preventDefault();
     if (overviewButtonName === 'Show Statistics of Active Customers') {
         axios.get('http://localhost:8000/get-active-customers', headers)
@@ -119,34 +116,36 @@ function App() {
   });
 
   let reportSection;
-  if (!report && !overviewData && !tableButtonClick) {
-    reportSection = (
-        <ReportWrapper>
-          <Holder>
-            Please select a table for the report
-          </Holder>
-        </ReportWrapper>
-    )
-  } else if (!report && !overviewData && tableButtonClick) {
-    reportSection = (
+  let loadingHolder = (
       <ReportWrapper>
         <Holder>
           Loading...
         </Holder>
       </ReportWrapper>
   )
+
+  if (!report && !overviewData && !tableButtonClick) {
+      reportSection = (
+          <ReportWrapper>
+            <Holder>
+              Please select a table for the report
+            </Holder>
+          </ReportWrapper>
+      )
+  } else if (!report && !overviewData && tableButtonClick) {
+      reportSection = loadingHolder;
   } else if (report && overviewData) {
-    reportSection = (
-      <ReportWrapper>
-        <Overview 
-            data={overviewData} 
-            getActiveCustomers={getActiveCustomers} 
-            buttonName={overviewButtonName} 
-            tableLabel={tableLabel}
-        />
-        <ColumnsView data={report} />
-      </ReportWrapper>
-    )
+      reportSection = (
+        <ReportWrapper>
+          <Overview 
+              data={overviewData} 
+              getActiveCustomers={getActiveCustomers} 
+              buttonName={overviewButtonName} 
+              tableLabel={tableLabel}
+          />
+          <ColumnsView data={report} />
+        </ReportWrapper>
+      )
   }
 
   if (blueTables && greenTables) {
