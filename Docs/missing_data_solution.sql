@@ -138,22 +138,8 @@ left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_
 where a.owner_id  is null;
 
 
- 
-
-
- 
-
-
- 
-
-
- 
-
 -- territory
-
-
  
-
 select
 
 a.id,
@@ -169,3 +155,45 @@ from ufdm.account a
 left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
 
 where a.territory  is null;
+
+-- CONTRAC START DATE
+select a.id, a."name", a."source", 
+
+ a.contract_start_date, min(bs.date_start) as netsuite_start_date
+
+from ufdm.account a
+
+left join epi_netsuite_2021_07_13.customers c on a.epi_universal_id = c.master_customer_id
+
+left join epi_netsuite_2021_07_13.billing_accounts ba on c.customer_id = ba.customer_id
+
+left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.billing_account_id = ba.billing_account_id
+
+where a.contract_start_date is null
+
+group by 1,2,3,4
+
+order by a.epi_universal_id
+
+
+ 
+-- CONTRAC END DATE
+ 
+
+select a.id, a."name", a."source", 
+
+ a.contract_end_date , max(bs.date_end) as netsuite_end_date
+
+from ufdm.account a
+
+left join epi_netsuite_2021_07_13.customers c on a.epi_universal_id = c.master_customer_id
+
+left join epi_netsuite_2021_07_13.billing_accounts ba on c.customer_id = ba.customer_id
+
+left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.billing_account_id = ba.billing_account_id
+
+where a.contract_start_date is null
+
+group by 1,2,3,4
+
+order by a.epi_universal_id
