@@ -62,39 +62,40 @@ def generate_report(schema, table):
 
 @app.get("/get-active-customers")
 def generate_active_customer_report():
-    query = ''' select a.*
-                from epi_netsuite_2021_07_13.customers c 
-                left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.customer_id = c.customer_id 
-                left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id = bs.subscription_id
-                left join ufdm.account a on a.epi_universal_id = c.master_customer_id 
-                where bsl.date_start <= now()
-                and bsl.date_end >= now()
-                and 1 = case  
-                            when bsl.date_termination > bsl.date_end or bsl.date_termination is null then 1 else 0
-                        end
-                GROUP BY 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
+    query = '''
+        select a.*
+        from  ufdm.account a
+        left join epi_netsuite_2021_07_13.customers c on a.epi_universal_id = c.master_customer_id 
+        left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.customer_id = c.customer_id 
+        left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id = bs.subscription_id
+        where bsl.date_start <= now()
+        and bsl.date_end >= now()
+        and 1 = case  
+                    when bsl.date_termination > bsl.date_end or bsl.date_termination is null then 1 else 0
+                end
+        GROUP BY 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
 
-                union all
+        union all
 
-                select a.*
-                from public.fpa_final_arr_analysis ffaa 
-                left join ufdm.account a on a.id = ffaa.account_id 
-                where ffaa.audit_month = '2021-06-01'
-                group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
-            
-                union all
+        select a.*
+        from ufdm.account a
+        left join public.fpa_final_arr_analysis ffaa on a.id = ffaa.account_id 
+        where ffaa.audit_month = '2021-06-01'
+        group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
+                    
+        union all
 
-                select a2.*
-                from zaius_salesforce.account a 
-                left join ufdm.account a2 on a2.id = a.id 
-                where a.record_type_id = '0121P000000oQMKQA2'
-                    and a.account_stage_c = 'Onboarding' 
-                    or a.account_stage_c = 'Ongoing'
-                    and a.name not like '%%Zaius%%' 
-                    and a.name not like '%%test%%'
-                    and a.name not like '%%zira web demo%%'
-                group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
-            '''
+        select a2.*
+        from ufdm.account a2
+        left join zaius_salesforce.account a on a2.id = a.id 
+        where a.record_type_id = '0121P000000oQMKQA2'
+        and a.account_stage_c = 'Onboarding' 
+        or a.account_stage_c = 'Ongoing'
+        and a.name not like '%%Zaius%%' 
+        and a.name not like '%%test%%'
+        and a.name not like '%%zira web demo%%'
+        group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
+    '''
     df = pgres.query(db,query)
     data = generate_data(df)
     return Response(media_type="application/json", content=data)
