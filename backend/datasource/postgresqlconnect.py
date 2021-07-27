@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import inspect
 import pandas as pd
 
-class Postgresql_connect(object):
+class PostgresqlConnect(object):
     def __init__(self, psql_user, psql_pass, pgres_host, pgres_port, ssh, ssh_user, ssh_host, ssh_pkey, localhost):
         # SSH Tunnel Variables
         self.pgres_host = pgres_host
