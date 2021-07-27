@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response
-from profiling import generate_data
-from data_source import Postgresql_connect
+from profiling.generatedata import generate_data
+from datasource.postgresqlconnect import PostgresqlConnect
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import secrets
@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-pgres = Postgresql_connect(
+pgres = PostgresqlConnect(
     secrets.pg_user,
     secrets.pg_password,
     secrets.pg_host,
