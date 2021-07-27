@@ -197,3 +197,45 @@ where a.contract_start_date is null
 group by 1,2,3,4
 
 order by a.epi_universal_id
+
+
+-- latest_mql_date
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.latest_mql_date as missing_latest_mql_date, l.date_latest_mql_c  as found_latest_mql
+from ufdm.account a 
+left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
+where a.latest_mql_date is null
+order by  l.date_latest_mql_c asc;
+
+--renewal
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.renewal_date  as missing_renewal_date, l.renewal_date_c  as found_renewal_date
+from ufdm.account a 
+left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
+where a.renewal_date is null
+order by l.renewal_date_c ;
+
+
+--Product
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.product as missing_product, 
+string_agg(i.displayname, ', ' ) as found_product
+from epi_netsuite_2021_07_13.billing_accounts ba 
+left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.billing_account_id = ba.billing_account_id  and bs."_fivetran_deleted"  is distinct from true 
+left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id  = bs.subscription_id  and bsl."_fivetran_deleted" is distinct  from true
+left join epi_netsuite_2021_07_13.companies c  on c.company_id  = ba.customer_id  and c."_fivetran_deleted"  is distinct from  true
+left join epi_netsuite_2021_07_13.items i on i.item_id  = bsl.item_id  and i."_fivetran_deleted"  is distinct from true
+left join ufdm.account a on a.epi_universal_id  = c.master_customer_id 
+where a.product is null
+group by 1,2,3,4;
+
+
