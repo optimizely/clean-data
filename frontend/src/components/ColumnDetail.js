@@ -69,9 +69,10 @@ const Label = styled.div`
 const ColumnDetail = (props) => {
     const [csvData, setCSVData] = useState('');
     const csvLink = useRef();
+    const tableName = props.tableLabel
 
     let solution = <div></div>;
-    if (props.detail.p_missing > 0) {
+    if (props.detail.p_missing > 0 && tableName === 'ufdm.account') {
         solution = (
             <ButtonWrapper>
                 <Button onClick={() => getCSVFile()}>Solution</Button>
@@ -83,15 +84,16 @@ const ColumnDetail = (props) => {
                         target="_blank"
                     />
             </ButtonWrapper>)
-    } else {
+    } else if (props.detail.p_missing == 0 && tableName === 'ufdm.account') {
         solution = <Label>It is clean!</Label>
-    }
+    } 
 
     const getCSVFile = async () => {
         const headers = {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           };
+
 
         axios.get(`http://localhost:8000/get-missing-report/${props.name}`, headers)
         .then((res) => {
