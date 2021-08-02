@@ -143,7 +143,9 @@ function App() {
               buttonName={overviewButtonName} 
               tableLabel={tableLabel}
           />
-          <ColumnsView data={report} />
+          <ColumnsView data={report} 
+              buttonName={overviewButtonName}
+              tableLabel={tableLabel}/>
         </ReportWrapper>
       )
   }

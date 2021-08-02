@@ -21,12 +21,17 @@ const Container = styled.div`
 
 function ColumnsView(props) {
 
+
     return (
         <Fragment>
             <Title>Column Validation</Title>
             <Container>
                     {props.data.map((column) => (
-                        <ColumnDetail key={column[0]} name={column[0]} detail={column[1]} />
+                        <ColumnDetail key = {column[0]} 
+                                name = {column[0]} 
+                                detail = {column[1]} 
+                                buttonName = {props.buttonName} 
+                                tableLabel = {props.tableLabel}/>
                     ))}
             </Container>
         </Fragment>
