@@ -81,7 +81,6 @@ function App() {
           for (let columnName in res.data.variables) {
             data.push([columnName, res.data.variables[columnName]]);
           }
-          console.log(res.data.table);
           setReport(data);
           setOverviewData(res.data.table);
           setTableLabel(`${schema}.${table}`)

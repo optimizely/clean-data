@@ -1,10 +1,14 @@
 from fastapi import FastAPI, Response
 from profiling.generatedata import generate_data
-from datasource.postgresqlconnect import PostgresqlConnect
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import date
+from dateutil.relativedelta import relativedelta
 import io
-import secrets
 import json
+
+
+from datasource.postgresqlconnect import PostgresqlConnect
+import secrets
 
 app = FastAPI()
 
@@ -28,7 +32,7 @@ QUERY_ACTIVE_CUSTOMER = '''
         select a.*
         from ufdm.account a
         left join public.fpa_final_arr_analysis ffaa on a.id = ffaa.account_id 
-        where ffaa.audit_month = '2021-06-01'
+        where ffaa.audit_month = '{lastmonth}'
         group by 1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69
                     
         union all
@@ -97,12 +101,14 @@ def generate_report(schema, table):
 
 @app.get("/get-active-customers")
 def generate_active_customer_report():
-    df = pgres.query(db,QUERY_ACTIVE_CUSTOMER)
+    lastmonth = date.today().replace(day=1) + relativedelta(months=-1)
+    lastmonthstr = lastmonth.strftime('%Y-%m-%d')
+    df = pgres.query(db,QUERY_ACTIVE_CUSTOMER.format(lastmonth=lastmonthstr))
     data = generate_data(df)
     return Response(media_type="application/json", content=data)
 
-@app.get("/get-missing-report/{column}")
-def generate_missing_column_csv(column):
+@app.get("/get-missing-report/{column}-{isactive}")
+def generate_missing_column_csv(column, isactive):
     f = open(QUERIES_FILE)
     queries_data = json.load(f)
     f.close()
@@ -118,8 +124,13 @@ def generate_missing_column_csv(column):
                 where a.{column} is null;'''.format(column = column)
     df = pgres.query(db,query)
     df.drop_duplicates(inplace=True, keep='first')
-    df_activecustomer = pgres.query(db,QUERY_ACTIVE_CUSTOMER)
-    df_toexport = df[df["id"].isin(df_activecustomer["id"])]
+    if isactive == '1':
+        lastmonth = date.today().replace(day=1) + relativedelta(months=-1)
+        lastmonthstr = lastmonth.strftime('%Y-%m-%d')
+        df_activecustomer = pgres.query(db,QUERY_ACTIVE_CUSTOMER.format(lastmonth=lastmonthstr))
+        df_toexport = df[df["id"].isin(df_activecustomer["id"])]
+    else:
+        df_toexport = df
     s = io.StringIO()
     df_toexport.to_csv(s)
     data = s.getvalue()
