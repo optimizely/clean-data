@@ -70,12 +70,13 @@ const ColumnDetail = (props) => {
     const [csvData, setCSVData] = useState('');
     const csvLink = useRef();
     const tableName = props.tableLabel
+    const buttonName = props.buttonName
 
     let solution = <div></div>;
     if (props.detail.p_missing > 0 && tableName === 'ufdm.account') {
         solution = (
             <ButtonWrapper>
-                <Button onClick={() => getCSVFile()}>Solution</Button>
+                <Button onClick={() => getCSVFile(buttonName)}>Solution</Button>
                     <CSVLink
                         filename={`${props.name}_missing_report.csv`}
                         data={csvData}
@@ -88,14 +89,20 @@ const ColumnDetail = (props) => {
         solution = <Label>It is clean!</Label>
     } 
 
-    const getCSVFile = async () => {
+    const getCSVFile = async (buttonName) => {
         const headers = {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
           };
 
+        let endPoint = ``
+        if (buttonName === 'Show Statistics of Active Customers'){
+            endPoint = `http://localhost:8000/get-missing-report/${props.name}-0`
+        } else {
+            endPoint = `http://localhost:8000/get-missing-report/${props.name}-1`
+        }
 
-        axios.get(`http://localhost:8000/get-missing-report/${props.name}`, headers)
+        axios.get(endPoint, headers)
         .then((res) => {
             setCSVData(res.data);
             csvLink.current.link.click()
