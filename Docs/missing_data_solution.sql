@@ -1,13 +1,17 @@
--- account_executiv_id
+-- account_executiv_id -----------MODIFY ------------------
 select 
 a.id,
 a."name" ,
 a."source" ,
-a.account_executive_id as missing_account_executive_id, l.primary_account_executive_c  as found_account_executive_id
+a.account_executive_id  as missing_account_executive,
+ssa.team_member_1_c  as found_account_executive_ID_FOPTI,
+l.primary_account_executive_c  as found_account_executive_id_FEPI
 from ufdm.account a 
+left join public.snapshot_sf_account ssa on ssa.id = a.id 
 left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
-where a.account_executive_id  is null
-order by  a."source"  asc;
+where account_executive_id  is null 
+and ssa.team_member_1_c  is not null 
+or l.primary_account_executive_c  is not null 
 
 -- website
 select 
@@ -234,8 +238,124 @@ left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.billing_account
 left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id  = bs.subscription_id  and bsl."_fivetran_deleted" is distinct  from true
 left join epi_netsuite_2021_07_13.companies c  on c.company_id  = ba.customer_id  and c."_fivetran_deleted"  is distinct from  true
 left join epi_netsuite_2021_07_13.items i on i.item_id  = bsl.item_id  and i."_fivetran_deleted"  is distinct from true
+right join ufdm.account a on a.epi_universal_id  = c.master_customer_id 
+where a.product is null
+group by 1,2,3,4;
+
+--skus
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.skus as missing_skus, 
+string_agg(i."name" , ', ' ) as found_skus
+from epi_netsuite_2021_07_13.billing_accounts ba 
+left join epi_netsuite_2021_07_13.billing_subscriptions bs on bs.billing_account_id = ba.billing_account_id  and bs."_fivetran_deleted"  is distinct from true 
+left join epi_netsuite_2021_07_13.billing_subscription_lines bsl on bsl.subscription_id  = bs.subscription_id  and bsl."_fivetran_deleted" is distinct  from true
+left join epi_netsuite_2021_07_13.companies c  on c.company_id  = ba.customer_id  and c."_fivetran_deleted"  is distinct from  true
+left join epi_netsuite_2021_07_13.items i on i.item_id  = bsl.item_id  and i."_fivetran_deleted"  is distinct from true
 left join ufdm.account a on a.epi_universal_id  = c.master_customer_id 
 where a.product is null
 group by 1,2,3,4;
+
+--duns id
+
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.duns_id as missing_duns_id,
+spsa.d_u_n_s_number_c
+from ufdm.account a 
+left join public.star_product_salesforce_account spsa  on spsa.id = a.id 
+where a.duns_id  is null
+order by spsa.d_u_n_s_number_c asc
+
+
+--naics
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.naics as missing_naics,
+spsa.primary_naics_code_c,
+csa.primary_naics_code 
+from ufdm.account a 
+left join public.star_product_salesforce_account spsa  on spsa.id = a.id
+left join public.cust_sf_account csa on csa.account_id  = a.id 
+where csa.primary_naics_code  is not null and a.naics is null
+
+--sic
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.sic as missing_naics,
+spsa.sic 
+from ufdm.account a 
+left join public.star_product_salesforce_account spsa  on spsa.id = a.id
+where spsa.sic is not null and a.sic is null
+
+--region
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.region  as missing_region,
+concat(case 
+when dar.ultimate_parent_account_territory_c  LIKE '%NA%' THEN 'North America'
+when dar.ultimate_parent_account_territory_c  LIKE '%EMEA%' THEN 'EMEA'
+when dar.ultimate_parent_account_territory_c  LIKE '%ANZ%' THEN 'APAC'
+else null
+end ,
+case
+ when l.account_territory_c  like  '%NA%' THEN 'North America'
+ when l.account_territory_c  like  '%North%America%' THEN 'North America'
+ when l.account_territory_c  like '%EMEA%' THEN 'EMEA'
+ when l.account_territory_c  like '%Europe%' THEN 'EMEA'
+ when l.account_territory_c  like  '%Sweden%' THEN 'EMEA'
+ when l.account_territory_c  like  '%UK%' THEN 'EMEA'
+ when l.account_territory_c  like '%ANZ%' THEN 'APAC'
+ when l.account_territory_c  like  '%APJ%' THEN 'APAC'
+ when l.account_territory_c  like  '%DACH%' THEN 'DACH'
+        ELSE null
+  end  ) as region_founded
+from ufdm.account a 
+left join derived_account_rollup dar on dar.account_id  = a.id 
+left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
+where a.region is null 
+and (l.account_territory_c  is not null 
+or dar.ultimate_parent_account_territory_c  is not null );
+
+-- Target account
+select 
+a.id,
+a."name" ,
+a."source" ,
+a.target_account  as missingg_target_account,
+l.sfdc_type as Found_target_account
+from ufdm.account a 
+left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
+where a.target_account is null
+and l.sfdc_type is not null 
+
+
+-- NEW SOLUTIONS NOT IN THE PLATFORM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
