@@ -20,21 +20,38 @@
     "duns_id" : "select a.id, a.\"name\" , a.\"source\" , a.duns_id as missing_duns_id, spsa.d_u_n_s_number_c from ufdm.account a  left join public.star_product_salesforce_account spsa  on spsa.id = a.id where a.duns_id  is null order by spsa.d_u_n_s_number_c asc ",
     "naics" : "select a.id, a.\"name\" , a.\"source\" , a.naics as missing_naics, spsa.primary_naics_code_c,  csa.primary_naics_code  from ufdm.account a  left join public.star_product_salesforce_account spsa  on spsa.id = a.id left join public.cust_sf_account csa on csa.account_id  = a.id where csa.primary_naics_code  is not null and a.naics is null ", 
     "sic" : "select a.id, a.\"name\" , a.\"source\" , a.sic as missing_naics, spsa.sic  from ufdm.account a  left join public.star_product_salesforce_account spsa  on spsa.id = a.id where spsa.sic is not null and a.sic is null ",
-    "region" : "select a.id, a.\"name\" ,  a.\"source\" ,  a.\"source\", a.region  as missing_region,  case when dar.ultimate_parent_account_territory_c  LIKE '%EMEA%' then '%EMEA%' when dar.ultimate_parent_account_territory_c  LIKE '%NA%' THEN 'North America'  when dar.ultimate_parent_account_territory_c  LIKE '%ANZ%' THEN 'APAC' else null end as region_founded_FOPTI, case  when l.account_territory_c  like  '%NA%' THEN 'North America'   when l.account_territory_c  like  '%North%America%' THEN 'North America'   when l.account_territory_c  like '%EMEA%' THEN 'EMEA'  when l.account_territory_c  like '%Europe%' THEN 'EMEA'  when l.account_territory_c  like  '%Sweden%' THEN 'EMEA'  when l.account_territory_c  like  '%UK%' THEN 'EMEA' when l.account_territory_c  like '%ANZ%' THEN 'APAC'   when l.account_territory_c  like  '%APJ%' THEN 'APAC'  when l.account_territory_c  like  '%DACH%' THEN 'DACH' else null end as region_founded_fepi  from ufdm.account a  left join derived_account_rollup dar on dar.account_id  = a.id  left join epi_marketo.\"lead\" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end  where a.region is null  and l.account_territory_c  is not null   or dar.ultimate_parent_account_territory_c  is not null;",
+    "target_account" : "select a.id, a.\"name\" ,a.\"source\" ,a.target_account  as missingg_target_account,l.sfdc_type as Found_target_accountfrom ufdm.account a left join epi_marketo.\"lead\" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  endwhere a.target_account is nulland l.sfdc_type is not null  ",
+    "region" : "select  a.id, a.\"name\" , a.\"source\" , a.region  as missing_region, concat(case  when dar.ultimate_parent_account_territory_c  LIKE '%%NA%%' THEN 'North America' when dar.ultimate_parent_account_territory_c  LIKE '%%EMEA%%' THEN 'EMEA' when dar.ultimate_parent_account_territory_c  LIKE '%%ANZ%%' THEN 'APAC' else null end , case when l.account_territory_c  like  '%%NA%%' THEN 'North America' when l.account_territory_c  like  '%%North%%America%%' THEN 'North America' when l.account_territory_c  like '%%EMEA%%' THEN 'EMEA' when l.account_territory_c  like '%%Europe%%' THEN 'EMEA' when l.account_territory_c  like  '%%Sweden%%' THEN 'EMEA' when l.account_territory_c  like  '%%UK%%' THEN 'EMEA' when l.account_territory_c  like '%%ANZ%%' THEN 'APAC'  when l.account_territory_c  like  '%%APJ%%' THEN 'APAC' when l.account_territory_c  like  '%%DACH%%' THEN 'DACH' ELSE null end  ) as region_founded from ufdm.account a  left join derived_account_rollup dar on dar.account_id  = a.id  left join epi_marketo.\"lead\" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end where a.region is null  and (l.account_territory_c  is not null  or dar.ultimate_parent_account_territory_c  is not null ) "
+  
+    
 
-    "target_account" : "select a.id, a.\"name\" ,a.\"source\" ,a.target_account  as missingg_target_account,l.sfdc_type as Found_target_accountfrom ufdm.account a left join epi_marketo.\"lead\" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  endwhere a.target_account is nulland l.sfdc_type is not null  "
-    
-    
-   
-    
-    
-    
-    
-   
-    
-          
-   
-   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+        
+ 
+
+
+
+
   
    
    

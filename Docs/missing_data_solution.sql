@@ -296,20 +296,18 @@ from ufdm.account a
 left join public.star_product_salesforce_account spsa  on spsa.id = a.id
 where spsa.sic is not null and a.sic is null
 
-
-
---  REGION
+--region
 select 
 a.id,
 a."name" ,
 a."source" ,
 a.region  as missing_region,
-case 
+concat(case 
 when dar.ultimate_parent_account_territory_c  LIKE '%NA%' THEN 'North America'
 when dar.ultimate_parent_account_territory_c  LIKE '%EMEA%' THEN 'EMEA'
 when dar.ultimate_parent_account_territory_c  LIKE '%ANZ%' THEN 'APAC'
 else null
-end as region_founded_FOPTI,
+end ,
 case
  when l.account_territory_c  like  '%NA%' THEN 'North America'
  when l.account_territory_c  like  '%North%America%' THEN 'North America'
@@ -321,13 +319,13 @@ case
  when l.account_territory_c  like  '%APJ%' THEN 'APAC'
  when l.account_territory_c  like  '%DACH%' THEN 'DACH'
         ELSE null
-  end as region_founded_fepi
+  end  ) as region_founded
 from ufdm.account a 
 left join derived_account_rollup dar on dar.account_id  = a.id 
 left join epi_marketo."lead" l on a.epi_universal_id = CASE  WHEN l.dynamics_id_c IS NULL THEN l.sf_guid_c ELSE l.dynamics_id_c  end
 where a.region is null 
-and l.account_territory_c  is not null 
-or dar.ultimate_parent_account_territory_c  is not null;
+and (l.account_territory_c  is not null 
+or dar.ultimate_parent_account_territory_c  is not null );
 
 -- Target account
 select 
