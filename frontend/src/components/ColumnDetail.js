@@ -3,6 +3,7 @@ import { useState, useRef, Fragment } from "react";
 import { CSVLink } from "react-csv";
 import axios from 'axios';
 import styled from "styled-components";
+import { HOST } from "../App";
 
 const Box = styled.div`
     display: flex;
@@ -97,9 +98,9 @@ const ColumnDetail = (props) => {
 
         let endPoint = ``
         if (buttonName === 'Show Statistics of Active Customers'){
-            endPoint = `http://localhost:8000/get-missing-report/${props.name}-0`
+            endPoint = `${HOST}/get-missing-report/${props.name}-0`
         } else {
-            endPoint = `http://localhost:8000/get-missing-report/${props.name}-1`
+            endPoint = `${HOST}/get-missing-report/${props.name}-1`
         }
 
         axios.get(endPoint, headers)

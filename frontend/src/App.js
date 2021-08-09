@@ -37,6 +37,7 @@ const Holder = styled.div`
   font-size: 3vw;
   padding: 200px 20px;
 `
+export const HOST = 'http://dataclean.dw.optimizely.com/backend';
 
 function App() {
 
@@ -54,7 +55,7 @@ function App() {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:8000/get-tables/ufdm', headers)
+    axios.get(`${HOST}/get-tables/ufdm`, headers)
       .then((res) => {
         let tables = [];
         for (let table in res.data["table name"]) {
@@ -63,7 +64,7 @@ function App() {
         setGreenTables(tables);
       })
     
-    axios.get('http://localhost:8000/get-tables/ufdm_blue', headers)
+    axios.get(`${HOST}/get-tables/ufdm_blue`, headers)
       .then((res) => {
         let tables = [];
         for (let table in res.data["table name"]) {
@@ -75,7 +76,7 @@ function App() {
 
   const getTableReports = useCallback((schema,table)=> {
       setTableButtonClick(true);
-      axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
+      axios.get(`${HOST}/get-report/${schema}-${table}`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -90,7 +91,7 @@ function App() {
   const getActiveCustomers = useCallback( (event, schema, table) => {
     event.preventDefault();
     if (overviewButtonName === 'Show Statistics of Active Customers') {
-        axios.get('http://localhost:8000/get-active-customers', headers)
+        axios.get(`${HOST}/get-active-customers`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -101,7 +102,7 @@ function App() {
         });
         setOverviewButtonName('Show Statistics of whole table')
     } else {
-        axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
+        axios.get(`${HOST}/get-report/${schema}-${table}`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
