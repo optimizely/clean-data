@@ -27,6 +27,7 @@ class PostgresqlConnect(object):
             self.local_port = server.local_bind_port
             print(f'Server connected via SSH || Local Port: {self.local_port}...')
         elif ssh == False:
+            self.local_port = pgres_port
             pass
 
     def schemas(self, db):
