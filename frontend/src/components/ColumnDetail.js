@@ -98,9 +98,9 @@ const ColumnDetail = (props) => {
 
         let endPoint = ``
         if (buttonName === 'Show Statistics of Active Customers'){
-            endPoint = `${HOST}/get-missing-report/${props.name}-0`
+            endPoint = `${HOST}/get-missing-report/${props.name}-0.csv`
         } else {
-            endPoint = `${HOST}/get-missing-report/${props.name}-1`
+            endPoint = `${HOST}/get-missing-report/${props.name}-1.csv`
         }
 
         axios.get(endPoint, headers)
