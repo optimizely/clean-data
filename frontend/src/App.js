@@ -37,6 +37,7 @@ const Holder = styled.div`
   font-size: 3vw;
   padding: 200px 20px;
 `
+export const HOST = 'https://dataclean-files.s3.amazonaws.com/backend';
 
 function App() {
 
@@ -54,20 +55,20 @@ function App() {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:8000/get-tables/ufdm', headers)
+    axios.get(`${HOST}/get-tables/ufdm.json`, headers)
       .then((res) => {
         let tables = [];
-        for (let table in res.data["table name"]) {
-          tables.push(res.data["table name"][table]);
+        for (let table in res.data["table_name"]) {
+          tables.push(res.data["table_name"][table]);
         }
         setGreenTables(tables);
       })
     
-    axios.get('http://localhost:8000/get-tables/ufdm_blue', headers)
+    axios.get(`${HOST}/get-tables/ufdm_blue.json`, headers)
       .then((res) => {
         let tables = [];
-        for (let table in res.data["table name"]) {
-          tables.push(res.data["table name"][table]);
+        for (let table in res.data["table_name"]) {
+          tables.push(res.data["table_name"][table]);
         }
         setBlueTables(tables);
       })
@@ -75,7 +76,7 @@ function App() {
 
   const getTableReports = useCallback((schema,table)=> {
       setTableButtonClick(true);
-      axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
+      axios.get(`${HOST}/get-report/${schema}-${table}.json`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -90,7 +91,7 @@ function App() {
   const getActiveCustomers = useCallback( (event, schema, table) => {
     event.preventDefault();
     if (overviewButtonName === 'Show Statistics of Active Customers') {
-        axios.get('http://localhost:8000/get-active-customers', headers)
+        axios.get(`${HOST}/get-active-customer/account.json`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -101,7 +102,7 @@ function App() {
         });
         setOverviewButtonName('Show Statistics of whole table')
     } else {
-        axios.get(`http://localhost:8000/get-report/${schema}-${table}`, headers)
+        axios.get(`${HOST}/get-report/${schema}-${table}.json`, headers)
         .then((res) => {
           let data = [];
           for (let columnName in res.data.variables) {
@@ -154,7 +155,10 @@ function App() {
       <Container>
         <Header />
           <Box>
-            <Sidebar green={greenTables} blue={blueTables} getTableReports={getTableReports} />
+            <Sidebar green={greenTables} 
+                  blue={blueTables} 
+                  getTableReports={getTableReports} 
+                  getActiveCustomers={getActiveCustomers}/>
             {reportSection}
           </Box>
       </Container>

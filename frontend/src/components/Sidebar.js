@@ -52,7 +52,8 @@ const Sidebar = (props) => {
                 if (table.substring(0, 9) !== 'snapshot_') {
                     return (
                         <TableButton key={table}
-                            onClick={() => props.getTableReports('ufdm', table)}
+                            onClick={() => 
+                                props.getTableReports('ufdm', table)}
                         >
                         {table}
                         </TableButton>

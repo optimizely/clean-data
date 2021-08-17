@@ -51,7 +51,8 @@ QUERY_ACTIVE_CUSTOMER = '''
 
 origins = [
     "http://localhost",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "dataclean.dw.optimizely.com"
 ]
 
 app.add_middleware(
