@@ -47,19 +47,6 @@ const Sidebar = (props) => {
                     )
                 }
             })}
-            <Label style={{backgroundColor:"#41c300"}}>UFDM - Green Layer</Label>
-            {props.green.map((table) => {
-                if (table.substring(0, 9) !== 'snapshot_') {
-                    return (
-                        <TableButton key={table}
-                            onClick={() => 
-                                props.getTableReports('ufdm', table)}
-                        >
-                        {table}
-                        </TableButton>
-                    )
-                }
-            })}
         </Container>
     )
 }

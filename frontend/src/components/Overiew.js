@@ -51,7 +51,7 @@ const Overview = (props) => {
     
     let ac_button;
     let c_validate;
-    if (table !== 'account') {
+    if (table !== 'customer_detail') {
         ac_button = <div></div>
         c_validate = <div></div>
     } else {

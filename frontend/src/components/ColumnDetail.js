@@ -74,7 +74,7 @@ const ColumnDetail = (props) => {
     const buttonName = props.buttonName
 
     let solution = <div></div>;
-    if (props.detail.p_missing > 0 && tableName === 'ufdm.account') {
+    if (props.detail.p_missing > 0 && tableName === 'ufdm_blue.customer_detail') {
         solution = (
             <ButtonWrapper>
                 <Button onClick={() => getCSVFile(buttonName)}>Solution</Button>
@@ -86,7 +86,7 @@ const ColumnDetail = (props) => {
                         target="_blank"
                     />
             </ButtonWrapper>)
-    } else if (props.detail.p_missing == 0 && tableName === 'ufdm.account') {
+    } else if (props.detail.p_missing == 0 && tableName === 'ufdm_blue.customer_detail') {
         solution = <Label>It is clean!</Label>
     } 
 
