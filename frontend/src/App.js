@@ -85,6 +85,7 @@ function App() {
           setReport(data);
           setOverviewData(res.data.table);
           setTableLabel(`${schema}.${table}`)
+          setOverviewButtonName('Show Statistics of Active Customers')
       })
   });
 
