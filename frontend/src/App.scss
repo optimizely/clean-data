@@ -1,0 +1,30 @@
+// OUI Variables
+@import '~optimizely-oui/src/oui/partials/sass/functions';
+@import '~optimizely-oui/src/tokens/forimport/index';
+@import '~optimizely-oui/src/oui/oui-variables';
+
+@import "~optimizely-oui/src/oui/oui-partials";
+
+// OUI mixins and classes
+@import '~optimizely-oui/src/overrides/Background';
+@import '~optimizely-oui/src/overrides/Border';
+@import '~optimizely-oui/src/overrides/Layout';
+@import '~optimizely-oui/src/overrides/Padding';
+// Design tokens
+@import '@optimizely/design-tokens/dist/scss/colors';
+@import '@optimizely/design-tokens/dist/scss/typography';
+@import '@optimizely/design-tokens/dist/fonts/fonts.css';
+
+@import "~optimizely-oui/src/overrides/admin";
+@import "~optimizely-oui/src/overrides/background";
+@import "~optimizely-oui/src/overrides/border";
+@import "~optimizely-oui/src/overrides/layout";
+@import "~optimizely-oui/src/overrides/margin";
+@import "~optimizely-oui/src/overrides/padding";
+@import "~optimizely-oui/src/overrides/type";
+@import "~optimizely-oui/src/overrides/sizing";
+
+
+html {
+    font-size: 14px;
+}
