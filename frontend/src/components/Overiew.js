@@ -1,97 +1,106 @@
-import { Fragment } from "react";
-import styled from "styled-components";
+import { SummaryBar, Switch } from "optimizely-oui";
 
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 100%;
-    height: auto;
-    padding: 10px;
-    
-`
-const Title = styled.div`
-    font-family: Roboto;
-    font-size: 2.5vw;
-    font-weight: 600;
-`
-const Metrics = styled.div`
-    font-family: Helvetica;
-    font-size: 1.2vw;
-    padding: 5px 0;
-`
-const Wrapper = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 5px 0;
-`
-
-const Number = styled.span`
-    font-family: Helvetica;
-    font-size: 1.2vw;
-`
-const Button = styled.button`
-    hight: auto;
-    font-family: Helvetica;
-    font-size: 1vw;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    background-color: azure;
-    :hover {background-color: #29B6F6}
-`
 
 const Overview = (props) => {
     const tableLabel = props.tableLabel.split('.');
     const schema = tableLabel[0];
     const table = tableLabel[1];
-    
+
+    let basicColumns;
     let ac_button;
-    let c_validate;
-    if (table !== 'account') {
-        ac_button = <div></div>
-        c_validate = <div></div>
-    } else {
-        ac_button = <Button onClick={(event) => props.getActiveCustomers(event, schema, table)}>{props.buttonName}</Button>
-        c_validate = (
-            <Fragment>
-                <Wrapper>
-                    <Metrics>Number of Customers with complete data</Metrics>
-                    <Number>{props.data.without_nulls}</Number>
-                </Wrapper>
-                <Wrapper>
-                    <Metrics>Number of Customers with missing data</Metrics>
-                    <Number>{props.data.with_nulls}</Number>
-                </Wrapper>
-                <Wrapper>
-                    <Metrics>Percentage of Customers with missing data</Metrics>
-                    <Number>{(props.data.perc_nulls * 100).toFixed(1)}%</Number>
-                </Wrapper>
-            </Fragment>
-        )
+    
+    if (table === 'customer_detail'){
+        basicColumns = [
+            {
+            header: 'Number of Columns',
+            bodyContent: {
+                value: props.data.n_var,
+                color: 'black',
+                isNumber: true,
+            },
+            },
+            {
+            header: 'Total Row Count',
+            bodyContent: {
+                value: props.data.n,
+                color: 'black',
+                isNumber: true,
+            },
+            },
+            {
+            header: 'Number of Customers with complete data',
+            bodyContent: {
+                value: props.data.without_nulls,
+                color: ((props.data.perc_nulls * 100).toFixed(1) < 50.0 ? 'green' : 'red'),
+                isNumber: true,
+            },
+            },
+            {
+            header: 'Number of Customers with missing data',
+            bodyContent: {
+                value: props.data.with_nulls,
+                color: ((props.data.perc_nulls * 100).toFixed(1) < 50.0 ? 'green' : 'red'),
+                isNumber: true,
+            },
+            },
+            {
+            header: 'Percentage of Customers with missing data',
+            bodyContent: {
+                    value: (props.data.perc_nulls * 100).toFixed(1)+'%',
+                    color: ((props.data.perc_nulls * 100).toFixed(1) < 50.0 ? 'green' : 'red'),
+                    isNumber: true,
+                },
+            headerHelpTooltip: "This columns were excluded for the calculation: " + props.data.columns_excluded.join(", "),
+            },
+        ];
+        ac_button = <div className="push flex flex-justified--center delta">
+            <div className="delta push--right">
+                {props.buttonName}
+            </div>
+            <Switch
+                onChange={(event) => props.getActiveCustomers(event, schema, table)}
+                checked={(props.buttonName === "Show Statistics of Active Customers" ? false : true)}
+                ariaLabel={props.buttonName}
+                elementId={props.buttonName}
+            >
+            </Switch>
+        </div>
+    }
+    else{
+        basicColumns = [
+            {
+            header: 'Number of Columns',
+            bodyContent: {
+                value: props.data.n_var,
+                color: 'black',
+                isNumber: true,
+            },
+            },
+            {
+            header: 'Total Row Count',
+            bodyContent: {
+                value: props.data.n,
+                color: 'black',
+                isNumber: true,
+            },
+            },
+        ];
+        ac_button = <div className="push"></div>;
     }
 
     return (
-        <Container>
-            <Wrapper>
-                <Title>{props.tableLabel} Overview</Title>
-                {ac_button}
-            </Wrapper>
-            <Wrapper>
-                <Metrics>Number of Columns</Metrics>
-                <Number>{props.data.n_var}</Number>
-            </Wrapper>
-            <Wrapper>
-                <Metrics>Total Row Count</Metrics>
-                <Number>{props.data.n}</Number>
-            </Wrapper>
-            {c_validate}
-        </Container>
+    <div>
+        <SummaryBar 
+            columns={basicColumns}
+            extraInfo="last update 2021/09/01"
+            title={table + ' Summary'}
+            className="push--bottom"
+            testSection={ 'summary-bar-test' }
+        >
+        </SummaryBar>
+        {ac_button}
+    </div>
     )
 }
-
 
 export default Overview;
