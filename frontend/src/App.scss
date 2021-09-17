@@ -1,5 +1,6 @@
 // OUI Variables
 @import '~optimizely-oui/src/oui/partials/sass/functions';
+@import '~optimizely-oui/src/oui/partials/sass/mixins';
 @import '~optimizely-oui/src/tokens/forimport/index';
 @import '~optimizely-oui/src/oui/oui-variables';
 
@@ -18,6 +19,7 @@
 @import "~optimizely-oui/src/overrides/admin";
 @import "~optimizely-oui/src/overrides/background";
 @import "~optimizely-oui/src/overrides/border";
+@import "~optimizely-oui/src/overrides/color";
 @import "~optimizely-oui/src/overrides/layout";
 @import "~optimizely-oui/src/overrides/margin";
 @import "~optimizely-oui/src/overrides/padding";
