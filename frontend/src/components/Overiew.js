@@ -55,7 +55,7 @@ const Overview = (props) => {
         ];
         ac_button = <div className="push flex flex-justified--center delta">
             <div className="delta push--right">
-                {props.buttonName}
+                "Show Active Customer Report"
             </div>
             <Switch
                 //onChange={(event) => props.getActiveCustomers(event, schema, table)}
