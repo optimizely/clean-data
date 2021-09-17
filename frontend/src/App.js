@@ -1,9 +1,9 @@
 import Overview from "./components/Overiew";
-import ColumnsView from "./components/ColumnsView";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import TableTabNav from "./components/TableTabNav";
 import styled from "styled-components";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.scss";
 
@@ -38,18 +38,14 @@ const Holder = styled.div`
   font-size: 3vw;
   padding: 200px 20px;
 `;
-export const HOST = "https://dataclean-files.s3.amazonaws.com/backend";
+export const HOST = "https://dataclean-files.s3.amazonaws.com/dev-backend";
 
 function App() {
-  const [report, setReport] = useState(null);
-  const [overviewData, setOverviewData] = useState(null);
-  const [overviewButtonName, setOverviewButtonName] = useState(
-    "Show Statistics of Active Customers"
-  );
+  const [isActiveCustomersON, setIsActiveCustomersON] = useState(false);
+  const [data, setData] = useState({ schema: null, table: null });
   const [blueTables, setBlueTables] = useState(null);
-  const [tableLabel, setTableLabel] = useState("");
   const [tableButtonClick, setTableButtonClick] = useState(false);
-  
+
   const [tableInfo, setTableInfo] = useState(null);
 
   const headers = {
@@ -67,43 +63,69 @@ function App() {
     });
   }, []);
 
-  const getTableReports = (schema, table) => {
-    setTableButtonClick(true);
-    axios
-      .get(`${HOST}/get-report/${schema}-${table}.json`, headers)
-      .then((res) => {
-        setTableInfo({...res.data, "label": `${schema}.${table}`})
-      });
-  };
-
-  const getActiveCustomers = useCallback((event, schema, table) => {
-    event.preventDefault();
-    if (overviewButtonName === "Show Statistics of Active Customers") {
+  useEffect(() => {
+    const { table, schema } = data;
+    if (!table || !schema) return;
+    if (isActiveCustomersON) {
+      const imgUrl = `${HOST}/get-table-img/${table}${
+        table === "customer_detail" && isActiveCustomersON
+          ? "-active"
+          : "-whole"
+      }/null-heatmap.jpg`;
       axios
         .get(`${HOST}/get-active-customer/account.json`, headers)
         .then((res) => {
-          let data = [];
-          for (let columnName in res.data.variables) {
-            data.push([columnName, res.data.variables[columnName]]);
-          }
-          setReport(data);
-          setOverviewData(res.data.table);
+          setTableInfo({
+            ...res.data,
+            label: `${schema}.${table}`,
+            imgUrl: imgUrl,
+          });
         });
-      setOverviewButtonName("Show Statistics of whole table");
-    } else {
-      axios
-        .get(`${HOST}/get-report/${schema}-${table}.json`, headers)
-        .then((res) => {
-          let data = [];
-          for (let columnName in res.data.variables) {
-            data.push([columnName, res.data.variables[columnName]]);
-          }
-          setReport(data);
-          setOverviewData(res.data.table);
-        });
-      setOverviewButtonName("Show Statistics of Active Customers");
     }
-  });
+  }, [isActiveCustomersON]);
+
+  useEffect(() => {
+    const { table, schema } = data;
+    if (!table || !schema) return;
+    if (!isActiveCustomersON) getTableReports();
+  }, [data]);
+
+  const getTableReports = () => {
+    const { table, schema } = data;
+    setTableButtonClick(true);
+    const imgUrl = `${HOST}/get-table-img/${table}${
+      table === "customer_detail" && !isActiveCustomersON ? "-whole" : ""
+    }/null-heatmap.jpg`;
+    axios
+      .get(`${HOST}/get-report/${schema}-${table}.json`, headers)
+      .then((res) => {
+        setTableInfo({
+          ...res.data,
+          label: `${schema}.${table}`,
+          imgUrl: imgUrl,
+        });
+      });
+  };
+
+  const getActiveCustomers = (event, schema, table) => {
+    event.preventDefault();
+    if (isActiveCustomersON) {
+      const imgUrl = `${HOST}/get-table-img/${table}${
+        table === "customer_detail" && isActiveCustomersON ? "-active" : ""
+      }/null-heatmap.jpg`;
+      axios
+        .get(`${HOST}/get-active-customer/account.json`, headers)
+        .then((res) => {
+          setTableInfo({
+            ...res.data,
+            label: `${schema}.${table}`,
+            imgUrl: imgUrl,
+          });
+        });
+    } else {
+      getTableReports(schema, table);
+    }
+  };
 
   return blueTables ? (
     <Container>
@@ -111,7 +133,9 @@ function App() {
       <Box>
         <Sidebar
           blue={blueTables}
-          getTableReports={getTableReports}
+          handleTableButtonClick={(schema, table) => {
+            setData({ schema, table });
+          }}
           getActiveCustomers={getActiveCustomers}
         />
         <ReportWrapper>
@@ -123,15 +147,16 @@ function App() {
             <>
               <Overview
                 data={tableInfo.table}
-                getActiveCustomers={getActiveCustomers}
-                buttonName={overviewButtonName}
+                isActiveCustomersON={isActiveCustomersON}
+                handleActiveCustomersChange={(event, schema, table) => {
+                  const target = event.currentTarget;
+                  const isChecked = target.checked;
+                  setIsActiveCustomersON(isChecked);
+                  setData({ schema, table });
+                }}
                 tableLabel={tableInfo.label}
               />
-              <ColumnsView
-                data={tableInfo.variables}
-                buttonName={overviewButtonName}
-                tableLabel={tableInfo.label}  
-              />
+              <TableTabNav tableInfo={tableInfo} buttonName={""} />
             </>
           ) : null}
         </ReportWrapper>

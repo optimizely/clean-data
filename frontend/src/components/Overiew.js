@@ -22,7 +22,7 @@ const Overview = (props) => {
             {
             header: 'Total Row Count',
             bodyContent: {
-                value: props.data.n,
+                value: props.data.n.toLocaleString(),
                 color: 'black',
                 isNumber: true,
             },
@@ -30,7 +30,7 @@ const Overview = (props) => {
             {
             header: 'Number of Customers with complete data',
             bodyContent: {
-                value: props.data.without_nulls,
+                value: props.data.without_nulls.toLocaleString(),
                 color: ((props.data.perc_nulls * 100).toFixed(1) < 50.0 ? 'green' : 'red'),
                 isNumber: true,
             },
@@ -38,7 +38,7 @@ const Overview = (props) => {
             {
             header: 'Number of Customers with missing data',
             bodyContent: {
-                value: props.data.with_nulls,
+                value: props.data.with_nulls.toLocaleString(),
                 color: ((props.data.perc_nulls * 100).toFixed(1) < 50.0 ? 'green' : 'red'),
                 isNumber: true,
             },
@@ -55,11 +55,12 @@ const Overview = (props) => {
         ];
         ac_button = <div className="push flex flex-justified--center delta">
             <div className="delta push--right">
-                {props.buttonName}
+                "Show Active Customer Report"
             </div>
             <Switch
-                onChange={(event) => props.getActiveCustomers(event, schema, table)}
-                checked={(props.buttonName === "Show Statistics of Active Customers" ? false : true)}
+                //onChange={(event) => props.getActiveCustomers(event, schema, table)}
+                onChange={(event)=>{props.handleActiveCustomersChange(event, schema, table)}}
+                checked={props.isActiveCustomersON}
                 ariaLabel={props.buttonName}
                 elementId={props.buttonName}
             >
