@@ -55,14 +55,14 @@ const Overview = (props) => {
         ];
         ac_button = <div className="push flex flex-justified--center delta">
             <div className="delta push--right">
-                "Show Active Customer Report"
+                Show Active Customer Report
             </div>
             <Switch
                 //onChange={(event) => props.getActiveCustomers(event, schema, table)}
                 onChange={(event)=>{props.handleActiveCustomersChange(event, schema, table)}}
                 checked={props.isActiveCustomersON}
-                ariaLabel={props.buttonName}
-                elementId={props.buttonName}
+                ariaLabel="ActiveCustomerSwitch"
+                elementId="ActiveCustomerSwitch"
             >
             </Switch>
         </div>
@@ -93,7 +93,7 @@ const Overview = (props) => {
     <div>
         <SummaryBar 
             columns={basicColumns}
-            extraInfo="last update 2021/09/01"
+            extraInfo={"last update " + props.data.date_calculation}
             title={table + ' Summary'}
             className="push--bottom"
             testSection={ 'summary-bar-test' }

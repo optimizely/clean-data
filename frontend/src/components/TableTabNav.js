@@ -21,15 +21,13 @@ const TableTabNav = (props) => {
       setImageCharged(e);
     });
 
-  console.log(tableInfo.imgUrl);
-
   let NavShow = <></>;
 
   if (tabSelected === "ColumnView") {
     NavShow = (
       <ColumnsView
         data={tableInfo.variables}
-        buttonName={props.buttonName}
+        isActiveCustomersON={props.isActiveCustomersON}
         tableLabel={tableInfo.label}
       />
     );

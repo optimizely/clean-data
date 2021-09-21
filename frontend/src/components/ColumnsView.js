@@ -87,11 +87,11 @@ class SortedTable extends React.Component {
               <Table.TR key={idx}>
                 <Table.TD>{row["Column Name"]}</Table.TD>
                 <Table.TD className={row["className"]} width="20%">
-                  {row["Missing Rows"]}{" "}
+                  {row["Missing Rows"].toLocaleString()}{" "}
                 </Table.TD>
                 <Table.TD className={row["className"]}>
                   {" "}
-                  {row["Missing Percentage"]}{" "}
+                  {(row["Missing Percentage"]* 100).toFixed(1) + "%"}{" "}
                 </Table.TD>
                 <Table.TD> {row["Solution/Status"]} </Table.TD>
               </Table.TR>
@@ -110,7 +110,7 @@ SortedTable.propTypes = {
     PropTypes.shape({
       "Column Name": PropTypes.string,
       "Missing Rows": PropTypes.number,
-      "Missing Percentage": PropTypes.string,
+      "Missing Percentage": PropTypes.number,
       "Solution/Status": PropTypes.node,
       className: PropTypes.string,
     })
@@ -134,15 +134,15 @@ function ColumnsView(props) {
       let solutionColumn = (
         <SolutionButton
           name={columnName}
-          tableScope={props.buttonName}
+          isActiveCustomersON={props.isActiveCustomersON}
           p_missing={columnDetails.p_missing}
           tableLabel={tableLabel}
         />
       );
       return {
         "Column Name": columnName,
-        "Missing Rows": columnDetails.n_missing.toLocaleString(),
-        "Missing Percentage": (columnDetails.p_missing * 100).toFixed(1) + "%",
+        "Missing Rows": columnDetails.n_missing,
+        "Missing Percentage": columnDetails.p_missing,
         "Solution/Status": solutionColumn,
         className:
           columnDetails.p_missing > 0.2
