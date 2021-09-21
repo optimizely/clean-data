@@ -87,7 +87,9 @@ function App() {
   useEffect(() => {
     const { table, schema } = data;
     if (!table || !schema) return;
-    if (!isActiveCustomersON) getTableReports();
+    if (!isActiveCustomersON) {
+      getTableReports();
+    }
   }, [data]);
 
   const getTableReports = () => {
@@ -107,25 +109,6 @@ function App() {
       });
   };
 
-  const getActiveCustomers = (event, schema, table) => {
-    event.preventDefault();
-    if (isActiveCustomersON) {
-      const imgUrl = `${HOST}/get-table-img/${table}${
-        table === "customer_detail" && isActiveCustomersON ? "-active" : ""
-      }/null-heatmap.jpg`;
-      axios
-        .get(`${HOST}/get-active-customer/account.json`, headers)
-        .then((res) => {
-          setTableInfo({
-            ...res.data,
-            label: `${schema}.${table}`,
-            imgUrl: imgUrl,
-          });
-        });
-    } else {
-      getTableReports(schema, table);
-    }
-  };
 
   return blueTables ? (
     <Container>
@@ -135,8 +118,8 @@ function App() {
           blue={blueTables}
           handleTableButtonClick={(schema, table) => {
             setData({ schema, table });
+            setIsActiveCustomersON(false);
           }}
-          getActiveCustomers={getActiveCustomers}
         />
         <ReportWrapper>
           {!tableInfo && !tableButtonClick ? (
@@ -156,7 +139,11 @@ function App() {
                 }}
                 tableLabel={tableInfo.label}
               />
-              <TableTabNav tableInfo={tableInfo} buttonName={""} />
+              <TableTabNav 
+                key={tableInfo.label}
+                tableInfo={tableInfo} 
+                isActiveCustomersON={isActiveCustomersON} 
+              />
             </>
           ) : null}
         </ReportWrapper>

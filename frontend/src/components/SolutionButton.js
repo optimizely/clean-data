@@ -8,7 +8,7 @@ const SolutionButton = (props) => {
   const [csvData, setCSVData] = useState("");
   const csvLink = useRef();
   const tableLabel = props.tableLabel;
-  const buttonName = props.tableScope;
+  const isActiveCustomersON = props.isActiveCustomersON;
 
   let solution = <div></div>;
   if (props.p_missing > 0 && tableLabel === "ufdm_blue.customer_detail") {
@@ -17,7 +17,7 @@ const SolutionButton = (props) => {
         <Button
           size="small"
           width="default"
-          onClick={() => getCSVFile(buttonName)}
+          onClick={() => getCSVFile(isActiveCustomersON)}
         >
           {" "}
           Solution{" "}
@@ -45,7 +45,8 @@ const SolutionButton = (props) => {
     };
 
     let endPoint = ``;
-    if (buttonName === "Show Statistics of Active Customers") {
+    console.log(isActiveCustomersON)
+    if (!isActiveCustomersON) {
       endPoint = `${HOST}/get-missing-report/${props.name}-0.csv`;
     } else {
       endPoint = `${HOST}/get-missing-report/${props.name}-1.csv`;
