@@ -1,6 +1,7 @@
 import { TabNav } from "optimizely-oui";
 import { useState } from "react";
 import ColumnsView from "./ColumnsView";
+import StewarshipTable from "./StewarshipTable"
 
 async function exists(url) {
   const result = await fetch(url, { method: "GET" });
@@ -23,13 +24,20 @@ const TableTabNav = (props) => {
 
   let NavShow = <></>;
 
+
   if (tabSelected === "ColumnView") {
     NavShow = (
-      <ColumnsView
+      (tableInfo.label.includes("stewardship")) ? 
+        <StewarshipTable 
         data={tableInfo.variables}
         isActiveCustomersON={props.isActiveCustomersON}
         tableLabel={tableInfo.label}
-      />
+        /> :
+        <ColumnsView
+          data={tableInfo.variables}
+          isActiveCustomersON={props.isActiveCustomersON}
+          tableLabel={tableInfo.label}
+        />
     );
   } else {
     NavShow = <img src={tableInfo.imgUrl} alt=""></img>;
@@ -53,7 +61,7 @@ const TableTabNav = (props) => {
             }}
             tabId="NullDist"
           >
-            Graph Null Distribution
+            Null Distribution Plot
           </TabNav.Tab>
         ) : null}
       </TabNav>

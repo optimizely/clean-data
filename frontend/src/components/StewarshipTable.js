@@ -1,5 +1,4 @@
 import React from "react";
-import SolutionButton from "./SolutionButton";
 import { Table } from "optimizely-oui";
 import PropTypes from "prop-types";
 
@@ -60,6 +59,7 @@ class SortedTable extends React.Component {
             >
               Column Name
             </Table.TH>
+            <Table.TH>Metric Type</Table.TH>
             <Table.TH
               sorting={{
                 canSort: true,
@@ -78,7 +78,6 @@ class SortedTable extends React.Component {
             >
               Missing Percentage
             </Table.TH>
-            <Table.TH>Solution/Status</Table.TH>
           </Table.TR>
         </Table.THead>
         <Table.TBody>
@@ -86,6 +85,7 @@ class SortedTable extends React.Component {
             return (
               <Table.TR key={idx}>
                 <Table.TD>{row["Column Name"]}</Table.TD>
+                <Table.TD> {row["Metric Type"]} </Table.TD>
                 <Table.TD className={row["className"]} width="20%">
                   {row["Missing Rows"].toLocaleString()}{" "}
                 </Table.TD>
@@ -93,7 +93,6 @@ class SortedTable extends React.Component {
                   {" "}
                   {(row["Missing Percentage"] * 100).toFixed(1) + "%"}{" "}
                 </Table.TD>
-                <Table.TD> {row["Solution/Status"]} </Table.TD>
               </Table.TR>
             );
           })}
@@ -109,9 +108,9 @@ SortedTable.propTypes = {
   tableContents: PropTypes.arrayOf(
     PropTypes.shape({
       "Column Name": PropTypes.string,
+      "Metric Type": PropTypes.string,
       "Missing Rows": PropTypes.number,
       "Missing Percentage": PropTypes.number,
-      "Solution/Status": PropTypes.node,
       className: PropTypes.string,
     })
   ),
@@ -131,20 +130,13 @@ function ColumnsView(props) {
       let columnName = column[0];
       let columnDetails = column[1];
 
-      let solutionColumn = (
-        <SolutionButton
-          name={columnName}
-          p_missing={columnDetails.p_missing}
-          tableLabel={tableLabel}
-        />
-      );
       return {
         "Column Name": columnName,
-        "Missing Rows": columnDetails.n_missing,
-        "Missing Percentage": columnDetails.p_missing,
-        "Solution/Status": solutionColumn,
+        "Metric Type": columnDetails.metric_name,
+        "Missing Rows": columnDetails.value,
+        "Missing Percentage": columnDetails.percentage,
         className:
-          columnDetails.p_missing > 0.2
+          columnDetails.percentage > 0.2
             ? "color--bad-news"
             : "color--good-news",
       };

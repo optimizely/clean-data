@@ -8,17 +8,12 @@ const SolutionButton = (props) => {
   const [csvData, setCSVData] = useState("");
   const csvLink = useRef();
   const tableLabel = props.tableLabel;
-  const isActiveCustomersON = props.isActiveCustomersON;
 
   let solution = <div></div>;
-  if (props.p_missing > 0 && tableLabel === "ufdm_blue.customer_detail") {
+  if (props.p_missing > 0 && tableLabel.includes("customer_detail")) {
     solution = (
       <div>
-        <Button
-          size="small"
-          width="default"
-          onClick={() => getCSVFile(isActiveCustomersON)}
-        >
+        <Button size="small" width="default" onClick={() => getCSVFile()}>
           {" "}
           Solution{" "}
         </Button>
@@ -31,10 +26,7 @@ const SolutionButton = (props) => {
         />
       </div>
     );
-  } else if (
-    props.p_missing === 0 &&
-    tableLabel === "ufdm_blue.customer_detail"
-  ) {
+  } else if (props.p_missing === 0 && tableLabel.includes("customer_detail")) {
     solution = <div className="color--good-news">It is clean!</div>;
   }
 
@@ -43,14 +35,10 @@ const SolutionButton = (props) => {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/json",
     };
+    const schemaAndTable = props.tableLabel.split(".");
+    const table = schemaAndTable[1];
 
-    let endPoint = ``;
-    console.log(isActiveCustomersON)
-    if (!isActiveCustomersON) {
-      endPoint = `${HOST}/get-missing-report/${props.name}-0.csv`;
-    } else {
-      endPoint = `${HOST}/get-missing-report/${props.name}-1.csv`;
-    }
+    const endPoint = `${HOST}/get-missing-report/${table}/${props.name}.csv`;
 
     axios
       .get(endPoint, headers)
